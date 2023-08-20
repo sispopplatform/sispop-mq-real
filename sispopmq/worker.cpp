@@ -1,7 +1,7 @@
-#include "lokimq.h"
+#include "sispopmq.h"
 #include "batch.h"
 #include "hex.h"
-#include "lokimq-internal.h"
+#include "sispopmq-internal.h"
 
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 extern "C" {
@@ -10,9 +10,9 @@ extern "C" {
 }
 #endif
 
-namespace lokimq {
+namespace sispopmq {
 
-void LokiMQ::worker_thread(unsigned int index) {
+void SispopMQ::worker_thread(unsigned int index) {
     std::string worker_id = "w" + std::to_string(index);
 
 #if defined(__linux__) || defined(__sun) || defined(__MINGW32__)
@@ -109,7 +109,7 @@ void LokiMQ::worker_thread(unsigned int index) {
 }
 
 
-LokiMQ::run_info& LokiMQ::get_idle_worker() {
+SispopMQ::run_info& SispopMQ::get_idle_worker() {
     if (idle_workers.empty()) {
         size_t id = workers.size();
         assert(workers.capacity() > id);
@@ -124,7 +124,7 @@ LokiMQ::run_info& LokiMQ::get_idle_worker() {
     return workers[id];
 }
 
-void LokiMQ::proxy_worker_message(std::vector<zmq::message_t>& parts) {
+void SispopMQ::proxy_worker_message(std::vector<zmq::message_t>& parts) {
     // Process messages sent by workers
     if (parts.size() != 2) {
         LMQ_LOG(error, "Received send invalid ", parts.size(), "-part message");
@@ -197,14 +197,14 @@ void LokiMQ::proxy_worker_message(std::vector<zmq::message_t>& parts) {
     }
 }
 
-void LokiMQ::proxy_run_worker(run_info& run) {
+void SispopMQ::proxy_run_worker(run_info& run) {
     if (!run.worker_thread.joinable())
-        run.worker_thread = std::thread{&LokiMQ::worker_thread, this, run.worker_id};
+        run.worker_thread = std::thread{&SispopMQ::worker_thread, this, run.worker_id};
     else
         send_routed_message(workers_socket, run.worker_routing_id, "RUN");
 }
 
-void LokiMQ::proxy_to_worker(size_t conn_index, std::vector<zmq::message_t>& parts) {
+void SispopMQ::proxy_to_worker(size_t conn_index, std::vector<zmq::message_t>& parts) {
     bool outgoing = connections[conn_index].getsockopt<int>(ZMQ_TYPE) == ZMQ_DEALER;
 
     peer_info tmp_peer;

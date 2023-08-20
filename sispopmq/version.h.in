@@ -1,0 +1,5 @@
+namespace sispopmq {
+constexpr int VERSION_MAJOR = @SISPOPMQ_VERSION_MAJOR@;
+constexpr int VERSION_MINOR = @SISPOPMQ_VERSION_MINOR@;
+constexpr int VERSION_PATCH = @SISPOPMQ_VERSION_PATCH@;
+}

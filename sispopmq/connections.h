@@ -2,7 +2,7 @@
 #include "auth.h"
 #include "string_view.h"
 
-namespace lokimq {
+namespace sispopmq {
 
 class bt_dict;
 struct ConnectionID;
@@ -72,18 +72,18 @@ private:
     long long id = 0;
     std::string pk;
     std::string route;
-    friend class LokiMQ;
+    friend class SispopMQ;
     friend struct std::hash<ConnectionID>;
     template <typename... T>
     friend bt_dict detail::build_send(ConnectionID to, string_view cmd, T&&... opts);
     friend std::ostream& operator<<(std::ostream& o, const ConnectionID& conn);
 };
 
-} // namespace lokimq
+} // namespace sispopmq
 namespace std {
-    template <> struct hash<lokimq::ConnectionID> {
-        size_t operator()(const lokimq::ConnectionID &c) const {
-            return c.sn() ? lokimq::already_hashed{}(c.pk) :
+    template <> struct hash<sispopmq::ConnectionID> {
+        size_t operator()(const sispopmq::ConnectionID &c) const {
+            return c.sn() ? sispopmq::already_hashed{}(c.pk) :
                 std::hash<long long>{}(c.id) + std::hash<std::string>{}(c.route);
         }
     };
